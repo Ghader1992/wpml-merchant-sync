@@ -47,7 +47,7 @@ function wpml_merchant_sync_check_dependencies() {
         deactivate_plugins( plugin_basename( __FILE__ ) );
     } else {
         // Initialize the plugin.
-        require_once __DIR__ . '/wpml-merchant-sync/vendor/autoload.php';
+        require_once plugin_dir_path( __FILE__ ) . 'vendor/autoload.php';
         add_action( 'plugins_loaded', [ \WPMLMerchantSync\Plugin::class, 'init' ] );
     }
 }

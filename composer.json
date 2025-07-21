@@ -1,0 +1,23 @@
+{
+    "name": "wp-local/wpml-merchant-sync",
+    "description": "A WordPress plugin to sync WooCommerce products with Google Merchant Center, with WPML support.",
+    "type": "wordpress-plugin",
+    "license": "GPL-2.0-or-later",
+    "authors": [
+        {
+            "name": "Jules",
+            "email": "jules@example.com"
+        }
+    ],
+    "require-dev": {
+        "phpunit/phpunit": "^9.5"
+    },
+    "autoload": {
+        "psr-4": {
+            "WPMLMerchantSync\\": "includes/"
+        }
+    },
+    "config": {
+        "vendor-dir": "wpml-merchant-sync/vendor"
+    }
+}
