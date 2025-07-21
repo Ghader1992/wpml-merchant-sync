@@ -35,7 +35,7 @@ function wpml_merchant_sync_check_dependencies() {
                     <?php
                     printf(
                         /* translators: %s: a comma-separated list of plugin names */
-                        esc_htmlesc_html__( 'The WPML Merchant Sync plugin requires the following plugins to be active: %s.', 'wpml-merchant-sync' ),
+                        esc_html__( 'The WPML Merchant Sync plugin requires the following plugins to be active: %s.', 'wpml-merchant-sync' ),
                         implode( ', ', $missing_dependencies )
                     );
                     ?>
