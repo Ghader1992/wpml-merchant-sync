@@ -1,14 +1,32 @@
 <?php
 namespace WPMLMerchantSync\Services;
 
+use WPMLMerchantSync\Helpers\WPML;
+
 class SyncScheduler {
 
 	const CRON_HOOK = 'wpml_merchant_sync_batch_sync';
 
 	/**
-	 * SyncScheduler constructor.
+	 * @var SyncService
 	 */
-	public function __construct() {
+	protected $sync_service;
+
+	/**
+	 * @var WPML
+	 */
+	protected $wpml;
+
+	/**
+	 * SyncScheduler constructor.
+	 *
+	 * @param SyncService $sync_service
+	 * @param WPML $wpml
+	 */
+	public function __construct( SyncService $sync_service, WPML $wpml ) {
+		$this->sync_service = $sync_service;
+		$this->wpml = $wpml;
+
 		add_action( self::CRON_HOOK, [ $this, 'run_batch_sync' ] );
 
 		$settings = get_option( 'wpml_merchant_sync_settings', [] );
@@ -23,10 +41,13 @@ class SyncScheduler {
 	 * Run the batch sync.
 	 */
 	public function run_batch_sync() {
-		// In a real implementation, this would queue a background job
-		// using Action Scheduler or WP Background Processing.
-		// For now, we'll just log a message.
 		$this->log( 'Running batch sync...' );
+
+		foreach ( $this->wpml->get_active_languages() as $lang ) {
+			$this->sync_service->sync_all_products( $lang['code'] );
+		}
+
+		$this->log( 'Batch sync complete.' );
 	}
 
 	/**

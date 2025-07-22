@@ -10,11 +10,14 @@
         }
     ],
     "require-dev": {
-        "phpunit/phpunit": "^9.5"
+        "phpunit/phpunit": "^9"
     },
     "autoload": {
         "psr-4": {
             "WPMLMerchantSync\\": "includes/"
         }
+    },
+    "require": {
+        "google/apiclient": "^2.0"
     }
 }

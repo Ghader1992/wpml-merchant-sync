@@ -6,16 +6,17 @@ class MerchantApiClient {
 	const API_BASE_URL = 'https://www.googleapis.com/content/v2.1/';
 
 	/**
-	 * @var string
+	 * @var ServiceAccountAuth
 	 */
-	protected $api_key;
+	protected $auth;
 
 	/**
 	 * MerchantApiClient constructor.
+	 *
+	 * @param ServiceAccountAuth $auth
 	 */
-	public function __construct() {
-		$options = get_option( 'wpml_merchant_sync_settings' );
-		$this->api_key = ! empty( $options['google_service_account'] ) ? $options['google_service_account'] : '';
+	public function __construct( ServiceAccountAuth $auth ) {
+		$this->auth = $auth;
 	}
 
 	/**
@@ -84,10 +85,12 @@ class MerchantApiClient {
 	 * Get the access token.
 	 *
 	 * @return string The access token.
+	 * @throws \Google\Exception
 	 */
 	protected function get_access_token() {
-		// In a real implementation, this would use the service account JSON
-		// to fetch an OAuth2 access token. For now, we'll just use the API key.
-		return $this->api_key;
+		$client = $this->auth->getClient();
+		$token  = $client->fetchAccessTokenWithAssertion();
+
+		return $token['access_token'];
 	}
 }

@@ -1,14 +1,21 @@
 <?php
 namespace WPMLMerchantSync\Services;
 
-use WPMLMerchantSync\Plugin;
-
 class RealTimeSync {
 
 	/**
-	 * RealTimeSync constructor.
+	 * @var SyncService
 	 */
-	public function __construct() {
+	protected $sync_service;
+
+	/**
+	 * RealTimeSync constructor.
+	 *
+	 * @param SyncService $sync_service
+	 */
+	public function __construct( SyncService $sync_service ) {
+		$this->sync_service = $sync_service;
+
 		add_action( 'save_post_product', [ $this, 'schedule_sync' ], 10, 2 );
 		add_action( 'woocommerce_product_set_stock', [ $this, 'schedule_sync_from_stock_change' ] );
 		add_action( 'wpml_after_save_post', [ $this, 'schedule_sync_from_translation' ], 10, 2 );
@@ -25,7 +32,7 @@ class RealTimeSync {
 			return;
 		}
 
-		$this->queue_sync( $post_id );
+		$this->sync_service->sync_product( $post_id );
 	}
 
 	/**
@@ -34,7 +41,7 @@ class RealTimeSync {
 	 * @param \WC_Product $product The product object.
 	 */
 	public function schedule_sync_from_stock_change( $product ) {
-		$this->queue_sync( $product->get_id() );
+		$this->sync_service->sync_product( $product->get_id() );
 	}
 
 	/**
@@ -48,17 +55,6 @@ class RealTimeSync {
 			return;
 		}
 
-		$this->queue_sync( $post_id );
-	}
-
-	/**
-	 * Queue a sync for a product.
-	 *
-	 * @param int $product_id The product ID.
-	 */
-	protected function queue_sync( $product_id ) {
-		// In a real implementation, this would use Action Scheduler
-		// to queue a background job. For now, we'll just invalidate the cache.
-		Plugin::instance()->cache_manager->invalidate_product( $product_id );
+		$this->sync_service->sync_product( $post_id );
 	}
 }

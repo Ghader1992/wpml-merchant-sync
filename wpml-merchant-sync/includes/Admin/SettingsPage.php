@@ -9,6 +9,7 @@ class SettingsPage {
 	public function __construct() {
 		add_action( 'admin_menu', [ $this, 'add_settings_page' ] );
 		add_action( 'admin_init', [ $this, 'register_settings' ] );
+		add_action( 'admin_init', [ $this, 'handle_manual_sync' ] );
 	}
 
 	/**
@@ -64,7 +65,28 @@ class SettingsPage {
 			'google_api'
 		);
 
-		// ... other settings fields will be added here
+		add_settings_section(
+			'sync',
+			esc_html__( 'Sync Settings', 'wpml-merchant-sync' ),
+			'__return_false',
+			'wpml_merchant_sync'
+		);
+
+		add_settings_field(
+			'sync_schedule',
+			esc_html__( 'Sync Schedule', 'wpml-merchant-sync' ),
+			[ $this, 'render_sync_schedule_field' ],
+			'wpml_merchant_sync',
+			'sync'
+		);
+
+		add_settings_field(
+			'manual_sync',
+			esc_html__( 'Manual Sync', 'wpml-merchant-sync' ),
+			[ $this, 'render_manual_sync_field' ],
+			'wpml_merchant_sync',
+			'sync'
+		);
 	}
 
 	/**
@@ -74,6 +96,34 @@ class SettingsPage {
 		$options = get_option( 'wpml_merchant_sync_settings' );
 		?>
 		<textarea name="wpml_merchant_sync_settings[google_service_account]" rows="10" cols="50" class="large-text"><?php echo esc_textarea( $options['google_service_account'] ?? '' ); ?></textarea>
+		<?php
+	}
+
+	/**
+	 * Render the Sync Schedule field.
+	 */
+	public function render_sync_schedule_field() {
+		$options = get_option( 'wpml_merchant_sync_settings' );
+		$schedules = wp_get_schedules();
+		?>
+		<select name="wpml_merchant_sync_settings[sync_schedule]">
+			<?php foreach ( $schedules as $name => $schedule ) : ?>
+				<option value="<?php echo esc_attr( $name ); ?>" <?php selected( $options['sync_schedule'] ?? 'hourly', $name ); ?>>
+					<?php echo esc_html( $schedule['display'] ); ?>
+				</option>
+			<?php endforeach; ?>
+		</select>
+		<?php
+	}
+
+	/**
+	 * Render the Manual Sync field.
+	 */
+	public function render_manual_sync_field() {
+		?>
+		<a href="<?php echo esc_url( add_query_arg( 'manual_sync', '1' ) ); ?>" class="button">
+			<?php esc_html_e( 'Sync All Products', 'wpml-merchant-sync' ); ?>
+		</a>
 		<?php
 	}
 
@@ -90,6 +140,21 @@ class SettingsPage {
 			$output['google_service_account'] = sanitize_textarea_field( $input['google_service_account'] );
 		}
 
+		if ( isset( $input['sync_schedule'] ) ) {
+			$output['sync_schedule'] = sanitize_text_field( $input['sync_schedule'] );
+		}
+
 		return $output;
+	}
+
+	/**
+	 * Handle the manual sync button.
+	 */
+	public function handle_manual_sync() {
+		if ( ! empty( $_GET['manual_sync'] ) ) {
+			wp_schedule_single_event( time(), SyncScheduler::CRON_HOOK );
+			wp_safe_redirect( remove_query_arg( 'manual_sync' ) );
+			exit;
+		}
 	}
 }

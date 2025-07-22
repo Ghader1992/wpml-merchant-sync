@@ -6,6 +6,8 @@ use WPMLMerchantSync\Repositories\ProductRepository;
 use WPMLMerchantSync\Services\MerchantApiClient;
 use WPMLMerchantSync\Services\FeedBuilder;
 use WPMLMerchantSync\Services\CacheManager;
+use WPMLMerchantSync\Services\ServiceAccountAuth;
+use WPMLMerchantSync\Services\SyncService;
 use WPMLMerchantSync\Services\SyncScheduler;
 use WPMLMerchantSync\Services\RealTimeSync;
 use WPMLMerchantSync\Controllers\RestController;
@@ -29,6 +31,11 @@ class Plugin {
 	public $product_repository;
 
 	/**
+	 * @var ServiceAccountAuth
+	 */
+	public $service_account_auth;
+
+	/**
 	 * @var MerchantApiClient
 	 */
 	public $merchant_api_client;
@@ -41,7 +48,12 @@ class Plugin {
 	/**
 	 * @var CacheManager
 	 */
-	public $cache_manager;
+	public'->cache_manager;
+
+	/**
+	 * @var SyncService
+	 */
+	public $sync_service;
 
 	/**
 	 * @var SyncScheduler
@@ -83,11 +95,13 @@ class Plugin {
 		$instance->load_textdomain();
 		$instance->wpml = new WPML();
 		$instance->product_repository = new ProductRepository( $instance->wpml );
-		$instance->merchant_api_client = new MerchantApiClient();
+		$instance->service_account_auth = new ServiceAccountAuth();
+		$instance->merchant_api_client = new MerchantApiClient( $instance->service_account_auth );
 		$instance->feed_builder = new FeedBuilder();
 		$instance->cache_manager = new CacheManager();
-		$instance->sync_scheduler = new SyncScheduler();
-		$instance->real_time_sync = new RealTimeSync();
+		$instance->sync_service = new SyncService( $instance->product_repository, $instance->merchant_api_client, $instance->wpml );
+		$instance->sync_scheduler = new SyncScheduler( $instance->sync_service, $instance->wpml );
+		$instance->real_time_sync = new RealTimeSync( $instance->sync_service );
 		$instance->rest_controller = new RestController();
 		$instance->settings_page = new SettingsPage();
 	}
