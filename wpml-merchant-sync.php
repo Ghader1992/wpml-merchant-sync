@@ -45,22 +45,12 @@ function wpml_merchant_sync_check_dependencies() {
         } );
 
         deactivate_plugins( plugin_basename( __FILE__ ) );
+    } else {
+        // Initialize the plugin.
+        require_once plugin_dir_path( __FILE__ ) . 'vendor/autoload.php';
+        add_action( 'plugins_loaded', [ \WPMLMerchantSync\Plugin::class, 'init' ] );
     }
 }
-
-// Manually load all the plugin files.
-require_once plugin_dir_path( __FILE__ ) . 'includes/Helpers/WPML.php';
-require_once plugin_dir_path( __FILE__ ) . 'includes/Repositories/ProductRepository.php';
-require_once plugin_dir_path( __FILE__ ) . 'includes/Services/FeedBuilder.php';
-require_once plugin_dir_path( __FILE__ ) . 'includes/Services/MerchantApiClient.php';
-require_once plugin_dir_path( __FILE__ ) . 'includes/Services/CacheManager.php';
-require_once plugin_dir_path( __FILE__ ) . 'includes/Services/SyncScheduler.php';
-require_once plugin_dir_path( __FILE__ ) . 'includes/Services/RealTimeSync.php';
-require_once plugin_dir_path( __FILE__ ) . 'includes/Controllers/RestController.php';
-require_once plugin_dir_path( __FILE__ ) . 'includes/Admin/SettingsPage.php';
-require_once plugin_dir_path( __FILE__ ) . 'includes/Plugin.php';
-
-add_action( 'plugins_loaded', [ \WPMLMerchantSync\Plugin::class, 'init' ] );
 
 register_uninstall_hook( __FILE__, 'wpml_merchant_sync_uninstall' );
 
