@@ -35,7 +35,7 @@ function wpml_merchant_sync_check_dependencies() {
                     <?php
                     printf(
                         /* translators: %s: a comma-separated list of plugin names */
-                        esc_html__( 'The WPML Merchant Sync plugin requires the following plugins to be active: %s.', 'wpml-merchant-sync' ),
+                        esc_htmlesc_html__( 'The WPML Merchant Sync plugin requires the following plugins to be active: %s.', 'wpml-merchant-sync' ),
                         implode( ', ', $missing_dependencies )
                     );
                     ?>
@@ -45,15 +45,12 @@ function wpml_merchant_sync_check_dependencies() {
         } );
 
         deactivate_plugins( plugin_basename( __FILE__ ) );
+    } else {
+        // Initialize the plugin.
+        require_once __DIR__ . '/vendor/autoload.php';
+        add_action( 'plugins_loaded', [ \WPMLMerchantSync\Plugin::class, 'init' ] );
     }
 }
-
-// Initialize the plugin.
-require_once plugin_dir_path( __FILE__ ) . 'includes/Plugin.php';
-
-add_action( 'plugins_loaded', function() {
-	\WPMLMerchantSync\Plugin::init();
-} );
 
 register_uninstall_hook( __FILE__, 'wpml_merchant_sync_uninstall' );
 
