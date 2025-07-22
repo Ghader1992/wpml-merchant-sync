@@ -49,11 +49,11 @@ function wpml_merchant_sync_check_dependencies() {
 }
 
 // Initialize the plugin.
-if ( file_exists( plugin_dir_path( __FILE__ ) . 'vendor/autoload.php' ) ) {
-	require_once plugin_dir_path( __FILE__ ) . 'vendor/autoload.php';
-}
+require_once plugin_dir_path( __FILE__ ) . 'vendor/autoload.php';
 
-add_action( 'plugins_loaded', [ \WPMLMerchantSync\Plugin::class, 'init' ] );
+add_action( 'plugins_loaded', function() {
+	\WPMLMerchantSync\Plugin::init();
+} );
 
 register_uninstall_hook( __FILE__, 'wpml_merchant_sync_uninstall' );
 
