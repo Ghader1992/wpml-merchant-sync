@@ -49,10 +49,11 @@ function wpml_merchant_sync_check_dependencies() {
 }
 
 // Initialize the plugin.
-if ( file_exists( '/srv/htdocs/wp-content/plugins/wpml-merchant-sync-feature-wpml-merchant-sync/vendor/autoload.php' ) ) {
-	require_once '/srv/htdocs/wp-content/plugins/wpml-merchant-sync-feature-wpml-merchant-sync/vendor/autoload.php';
-	add_action( 'plugins_loaded', [ \WPMLMerchantSync\Plugin::class, 'init' ] );
+if ( file_exists( plugin_dir_path( __FILE__ ) . 'vendor/autoload.php' ) ) {
+	require_once plugin_dir_path( __FILE__ ) . 'vendor/autoload.php';
 }
+
+add_action( 'plugins_loaded', [ \WPMLMerchantSync\Plugin::class, 'init' ] );
 
 register_uninstall_hook( __FILE__, 'wpml_merchant_sync_uninstall' );
 
