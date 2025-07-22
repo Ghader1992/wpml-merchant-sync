@@ -48,7 +48,8 @@ function wpml_merchant_sync_check_dependencies() {
     } else {
         // Initialize the plugin.
         require_once __DIR__ . '/vendor/autoload.php';
-        add_action( 'plugins_loaded', [ \WPMLMerchantSync\Plugin::class, 'init' ] );
+        add_action( 'plugins_loaded', [\WPMLMerchantSync\Plugin::class, 'init'], 20);
+        error_log('WPMLMerchantSync ► plugins_loaded hook registered');
     }
 }
 
