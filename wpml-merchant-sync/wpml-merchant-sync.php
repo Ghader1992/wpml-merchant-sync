@@ -49,7 +49,7 @@ function wpml_merchant_sync_check_dependencies() {
 }
 
 // Initialize the plugin.
-require_once plugin_dir_path( __FILE__ ) . 'vendor/autoload.php';
+require_once plugin_dir_path( __FILE__ ) . 'includes/Plugin.php';
 
 add_action( 'plugins_loaded', function() {
 	\WPMLMerchantSync\Plugin::init();
