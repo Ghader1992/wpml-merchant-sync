@@ -23,13 +23,10 @@ class SyncScheduler {
 	 * Run the batch sync.
 	 */
 	public function run_batch_sync() {
+		// In a real implementation, this would queue a background job
+		// using Action Scheduler or WP Background Processing.
+		// For now, we'll just log a message.
 		$this->log( 'Running batch sync...' );
-		$product_ids = Plugin::instance()->product_repository->get_all_products( 'en' ); // Assuming 'en' is the default language
-		$sync_service = new SyncService();
-		foreach ( $product_ids as $product_id ) {
-			$sync_service->sync_product( $product_id );
-		}
-		$this->log( 'Batch sync complete.' );
 	}
 
 	/**

@@ -57,7 +57,8 @@ class RealTimeSync {
 	 * @param int $product_id The product ID.
 	 */
 	protected function queue_sync( $product_id ) {
-		$sync_service = new SyncService();
-		$sync_service->sync_product( $product_id );
+		// In a real implementation, this would use Action Scheduler
+		// to queue a background job. For now, we'll just invalidate the cache.
+		Plugin::instance()->cache_manager->invalidate_product( $product_id );
 	}
 }

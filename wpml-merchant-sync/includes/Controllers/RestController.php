@@ -49,31 +49,16 @@ class RestController {
 	public function get_feed( \WP_REST_Request $request ) {
 		$lang = $request->get_param( 'lang' );
 		$format = $request->get_param( 'format' );
-		$category = $request->get_param( 'category' );
-		$modified_after = $request->get_param( 'modified_after' );
-		$limit = $request->get_param( 'limit' );
 
-		$cache_key = "{$lang}_{$format}_{$category}_{$modified_after}_{$limit}";
-		$cached_feed = Plugin::instance()->cache_manager->get( $lang, $cache_key );
+		$cached_feed = Plugin::instance()->cache_manager->get( $lang, $format );
 		if ( $cached_feed ) {
 			return new \WP_REST_Response( $cached_feed );
 		}
 
-		if ( $category ) {
-			$product_ids = Plugin::instance()->product_repository->get_products_by_category( $lang, $category );
-		} elseif ( $modified_after ) {
-			$product_ids = Plugin::instance()->product_repository->get_products_modified_after( $lang, $modified_after );
-		} else {
-			$product_ids = Plugin::instance()->product_repository->get_all_products( $lang );
-		}
-
-		if ( $limit ) {
-			$product_ids = array_slice( $product_ids, 0, $limit );
-		}
-
+		$product_ids = Plugin::instance()->product_repository->get_all_products( $lang );
 		$feed = Plugin::instance()->feed_builder->build( $product_ids, $format );
 
-		Plugin::instance()->cache_manager->set( $lang, $cache_key, $feed );
+		Plugin::instance()->cache_manager->set( $lang, $format, $feed );
 
 		return new \WP_REST_Response( $feed );
 	}
