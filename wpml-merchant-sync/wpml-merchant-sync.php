@@ -49,8 +49,8 @@ function wpml_merchant_sync_check_dependencies() {
 }
 
 // Initialize the plugin.
-if ( file_exists( __DIR__ . '/vendor/autoload.php' ) ) {
-	require_once __DIR__ . '/vendor/autoload.php';
+if ( file_exists( '/srv/htdocs/wp-content/plugins/wpml-merchant-sync-feature-wpml-merchant-sync/vendor/autoload.php' ) ) {
+	require_once '/srv/htdocs/wp-content/plugins/wpml-merchant-sync-feature-wpml-merchant-sync/vendor/autoload.php';
 	add_action( 'plugins_loaded', [ \WPMLMerchantSync\Plugin::class, 'init' ] );
 }
 
